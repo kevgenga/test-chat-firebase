@@ -1,0 +1,248 @@
+/* ========== RESET ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* ========== BASE ========== */
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    padding: 2rem;
+  }
+  
+  /* ========== MODE CLAIR ========== */
+  body.light {
+    background-color: #f4f6f8;
+    color: #333;
+  }
+  
+  body.light #profil-container {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  body.light input,
+  body.light button {
+    background-color: #ffffff;
+    color: #333;
+  }
+  
+  body.light input {
+    border: 1px solid #ccc;
+  }
+  
+  /* ========== MODE SOMBRE ========== */
+  body.dark {
+    background-color: #121212;
+    color: #e0e0e0;
+  }
+  
+  body.dark #profil-container {
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  body.dark input,
+  body.dark button {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+  }
+  
+  body.dark input {
+    border: 1px solid #555;
+  }
+  
+  /* ========== CONTAINER PROFIL ========== */
+  #profil-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 2rem;
+    border-radius: 12px;
+  }
+  
+  /* ========== TITRE ========== */
+  h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+  }
+  
+  /* ========== AVATAR ========== */
+  #user-avatar {
+    display: block;
+    margin: 0 auto 1rem;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+  }
+  
+  /* ========== INFOS PROFIL ========== */
+  #profil-container p {
+    margin: 10px 0;
+    font-size: 1rem;
+  }
+  
+  #profil-container p strong {
+    font-weight: bold;
+  }
+  
+  /* ========== BOUTONS GÉNÉRAUX ========== */
+  button {
+    background-color: #0077ff;
+    color: #fff;
+    padding: 0.6rem 1.2rem;
+    margin: 0.4rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  button:hover {
+    background-color: #005edb;
+  }
+  
+  button:focus {
+    outline: none;
+  }
+  
+  /* ========== BOUTON DECONNEXION ========== */
+  #logout-button {
+    background-color: #f44336;
+  }
+  
+  #logout-button:hover {
+    background-color: #d32f2f;
+  }
+  
+  /* ========== BOUTON ALLER AU CHAT ========== */
+  #go-to-chat {
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 20px;
+    background-color: #388e3c; /* Couleur rouge pour le bouton de déconnexion */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  #go-to-chat:hover {
+    background-color: #2e7d32;
+  }
+  body.light #go-to-chat {
+    background-color: #4caf50;
+    color: white;
+  }
+  body.light #go-to-chat:hover {
+    background-color: #45a049;
+  }
+  
+  /* ========== BOUTON SWITCH THEME ========== */
+  #theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #0077ff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    z-index: 100;
+  }
+  
+  #theme-toggle:hover {
+    background-color: #005fa3;
+  }
+  
+  /* ========== FORMULAIRE D'ÉDITION ========== */
+  #edit-profile-form {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ccc;
+  }
+  
+  #edit-profile-form h2 {
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+  }
+  
+  form div {
+    margin-bottom: 1rem;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-weight: bold;
+  }
+  
+  input[type="text"],
+  input[type="file"] {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 6px;
+  }
+  
+  /* ========== INFOS UTILISATEUR MESSAGE ========== */
+  .message-user {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 4px;
+  }
+  
+  .user-link {
+    text-decoration: none;
+    color: #0077ff;
+    margin-left: 4px;
+  }
+  
+  .user-link:hover {
+    text-decoration: underline;
+    color: #005edb;
+  }
+  
+  /* ========== STYLE DU "(Vous)" ========== */
+  .vous-label {
+    font-size: 0.6rem;
+    color: #888;
+    margin-left: 4px;
+    font-style: italic;
+  }
+  
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 600px) {
+    h1 {
+      font-size: 1.5rem;
+    }
+  
+    #profil-container {
+      padding: 1.5rem;
+    }
+  
+    button {
+      margin: 0.3rem 0;
+    }
+  
+    #theme-toggle {
+      top: 10px;
+      right: 10px;
+      padding: 8px 12px;
+      font-size: 1rem;
+    }
+  }
+  

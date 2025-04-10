@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat Firebase</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <link rel="stylesheet" href="chat.css" />
+  <script src="chat.js" defer></script>
+</head>
+<body>
+  <h1 id="titre-du-chat">Chatbox général</h1>
+
+  <ul id="messages"></ul>
+
+  <div>
+    <input type="text" id="messageInput" placeholder="Tapez votre message..." autocomplete="off" disabled>
+    <button id="bouton-envoyer" onclick="sendMessage()" disabled>Envoyer</button>
+    <button id="bouton-profil" onclick="window.location.href='edit-profil.html'">Éditer mon profil</button>
+  </div>
+
+  <button id="logout-button">Se déconnecter</button>
+  <button id="theme-toggle">Thème 🌓</button>
+
+</body>
+</html>

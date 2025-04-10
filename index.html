@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Authentification</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script> <!-- Ajout Firestore -->
+  <link rel="stylesheet" href="index.css" />
+  <script src="index.js" defer></script>
+</head>
+<body>
+
+  <div class="auth-container" id="auth-container">
+    <h2 id="auth-title">Connexion</h2>
+
+    <!-- Form Connexion -->
+    <form id="login-form">
+      <input type="email" id="login-email" placeholder="Votre email" required>
+      <input type="password" id="login-password" placeholder="Votre mot de passe" required>
+      <button id="boutton-connexion" type="submit">Se connecter</button>
+    </form>
+
+    <!-- Form Inscription -->
+    <form id="signup-form" style="display: none;">
+      <input type="email" id="signup-email" placeholder="Votre email" required>
+      <input type="password" id="signup-password" placeholder="Votre mot de passe" required>
+      <button id="signup-button" type="submit">S'inscrire</button>
+    </form>
+
+    <!-- Liens -->
+    <p class="toggle-link" id="toggle-link">Pas encore de compte ? Inscrivez-vous ici.</p>
+    <p class="toggle-link" id="back-link" style="display: none;">Déjà un compte ? Connectez-vous ici.</p>
+
+    <!-- Messages -->
+    <p id="error-message" class="error-message"></p>
+    <p id="success-message" class="success-message"></p>
+
+    <!-- Bouton de thème -->
+    <div class="theme-toggle">
+      <button onclick="toggleTheme()">Thème 🌓</button>
+    </div>
+  </div>
+
+</body>
+</html>

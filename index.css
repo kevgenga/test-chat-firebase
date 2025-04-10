@@ -1,0 +1,143 @@
+:root {
+    --bg-color: #f0f0f0;
+    --text-color: #222;
+    --card-bg: #fff;
+    --input-bg: #fff;
+    --border-color: #ddd;
+    --btn-bg: #4CAF50;
+    --btn-hover: #45a049;
+    --link-color: #4CAF50;
+  }
+
+  [data-theme="dark"] {
+    --bg-color: #121212;
+    --text-color: #eee;
+    --card-bg: #1e1e1e;
+    --input-bg: #2c2c2c;
+    --border-color: #444;
+    --btn-bg: #5ec56e;
+    --btn-hover: #4db25a;
+    --link-color: #90ee90;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  #signup-button, #boutton-connexion, #login-form, #signup-form {
+    margin-top: 10px;
+    display: block; /* Le bouton passe à la ligne */
+    margin-left: auto; /* Centre le bouton horizontalement */
+    margin-right: auto; /* Centre le bouton horizontalement */
+    width: 250px; /* Définir une largeur pour le bouton */
+  }
+
+  #signup-email, #login-email, #signup-password, #login-password {
+    margin: 0 auto;
+    margin-bottom: 10px;
+    width: 100%;
+  }
+
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .auth-container {
+    background-color: var(--card-bg);
+    padding: 24px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    transition: background-color 0.3s;
+  }
+
+  .auth-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  input {
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    font-size: 16px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  button {
+    padding: 12px;
+    background-color: var(--btn-bg);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  button:hover {
+    background-color: var(--btn-hover);
+  }
+
+  .toggle-link {
+    text-align: center;
+    margin-top: 25px;
+    color: var(--link-color);
+    cursor: pointer;
+  }
+
+  .toggle-link:hover {
+    text-decoration: underline;
+  }
+
+  .error-message,
+  .success-message {
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .error-message {
+    color: red;
+  }
+
+  .success-message {
+    color: green;
+  }
+
+  .theme-toggle {
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .theme-toggle button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  
+  @media (max-width: 480px) {
+    .auth-container {
+      margin: 0 16px;
+      padding: 20px;
+    }
+  }

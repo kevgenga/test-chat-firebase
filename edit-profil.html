@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profil Utilisateur</title>
+  <link rel="stylesheet" href="edit-profil.css" />
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+  <!-- Ton script principal -->
+  <script src="edit-profil.js" defer></script>
+
+  <!-- Script pour thème clair/sombre -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const savedTheme = localStorage.getItem('theme');
+      const bodyClass = document.body.classList;
+
+      if (savedTheme) {
+        bodyClass.add(savedTheme);
+      } else {
+        bodyClass.add(prefersDark ? 'dark' : 'light');
+      }
+
+      const toggleButton = document.getElementById('theme-toggle');
+      if (toggleButton) {
+        toggleButton.addEventListener('click', () => {
+          if (bodyClass.contains('dark')) {
+            bodyClass.replace('dark', 'light');
+            localStorage.setItem('theme', 'light');
+          } else {
+            bodyClass.replace('light', 'dark');
+            localStorage.setItem('theme', 'dark');
+          }
+        });
+      }
+    });
+  </script>
+
+</head>
+
+<body>
+  <!-- Bouton thème (clair/sombre) -->
+  <button id="theme-toggle" style="
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 0.5rem 1rem;
+    background-color: #0077ff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  ">
+    🌙 / ☀️
+  </button>
+
+  <h1>Éditer mon profil</h1>
+
+  <section id="profil-container">
+    <img id="user-avatar" src="profil.jpg" alt="Avatar" width="100" height="100" />
+    <p><strong>Pseudo :</strong> <span id="user-displayName">Non défini</span></p>
+    <p><strong>Email :</strong> <span id="user-email"></span></p>
+    <p><strong>UID :</strong> <span id="user-uid"></span></p>
+    <hr>
+    <br>
+
+    <!-- Bouton pour ouvrir l'édition du profil -->
+     <span id="container-bouton-e-g">
+      <button id="edit-profile-button">Editer mon pseudo</button>
+
+      <button id="go-to-chat">Retourner au chat</button>
+     </section>
+    <!-- <button id="logout-button">Se déconnecter</button> -->
+
+    <!-- Formulaire de modification du profil -->
+    <div id="edit-profile-form" style="display: none;">
+      <h2>Modifier mon pseudo</h2>
+      <form id="profileForm">
+        <div>
+          <label for="displayName">Pseudo :</label>
+          <input type="text" id="displayName" name="displayName" placeholder="Entrez votre nouveau pseudo ..." required>
+        </div>
+        <!-- <div>
+          <label for="avatar">Avatar :</label>
+          <input type="file" id="avatar" name="avatar" accept="image/*">
+        </div> -->
+        <button id="btn-enregistrer" type="submit">Enregistrer</button>
+        <button id="cancel-edit" type="button">Annuler</button>
+      </form>
+    </div>
+  </div>
+
+</body>
+
+</html>
