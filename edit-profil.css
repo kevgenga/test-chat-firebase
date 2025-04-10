@@ -20,6 +20,7 @@
   
   body.light #profil-container {
     background-color: #ffffff;
+    border: 1px solid #ddd;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   }
   
@@ -41,6 +42,7 @@
   
   body.dark #profil-container {
     background-color: #1e1e1e;
+    border: 1px solid #444;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
   
@@ -56,7 +58,6 @@
   
   /* ========== CONTAINER PRINCIPAL ========== */
   #profil-container {
-    border: 1px solid #444;
     max-width: 500px;
     margin: 0 auto;
     padding: 2rem;
