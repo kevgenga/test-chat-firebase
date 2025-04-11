@@ -8,42 +8,74 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script> <!-- Ajout Firestore -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- CSS et JS -->
   <link rel="stylesheet" href="index.css" />
-  <script src="index.js" defer></script>
+  <script defer>
+    // Appliquer le thème sauvegardé au chargement
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = localStorage.getItem("theme") || "light-mode";
+      document.body.classList.add(savedTheme);
+    });
+
+    // Bascule entre les thèmes
+    function toggleTheme() {
+      const body = document.body;
+      if (body.classList.contains("light-mode")) {
+        body.classList.replace("light-mode", "dark-mode");
+        localStorage.setItem("theme", "dark-mode");
+      } else {
+        body.classList.replace("dark-mode", "light-mode");
+        localStorage.setItem("theme", "light-mode");
+      }
+    }
+  </script>
 </head>
 <body>
 
-  <div class="auth-container" id="auth-container">
-    <h2 id="auth-title">Connexion</h2>
+  <!-- Conteneur global -->
+  <div class="container">
 
-    <!-- Form Connexion -->
-    <form id="login-form">
-      <input type="email" id="login-email" placeholder="Votre email" required>
-      <input type="password" id="login-password" placeholder="Votre mot de passe" required>
-      <button id="boutton-connexion" type="submit">Se connecter</button>
-    </form>
+    <!-- Logo + Titre -->
+    <div class="logo-title">
+      <img src="logo.webp" alt="Logo" class="logo" />
+      <h1>CHATBOX</h1>
+    </div>
 
-    <!-- Form Inscription -->
-    <form id="signup-form" style="display: none;">
-      <input type="email" id="signup-email" placeholder="Votre email" required>
-      <input type="password" id="signup-password" placeholder="Votre mot de passe" required>
-      <button id="signup-button" type="submit">S'inscrire</button>
-    </form>
+    <!-- Boîte d'authentification -->
+    <div class="auth-box">
 
-    <!-- Liens -->
-    <p class="toggle-link" id="toggle-link">Pas encore de compte ? Inscrivez-vous ici.</p>
-    <p class="toggle-link" id="back-link" style="display: none;">Déjà un compte ? Connectez-vous ici.</p>
+      <h2 id="auth-title">Connexion</h2>
 
-    <!-- Messages -->
-    <p id="error-message" class="error-message"></p>
-    <p id="success-message" class="success-message"></p>
+      <!-- Form Connexion -->
+      <form id="login-form">
+        <input type="email" id="login-email" placeholder="Votre email" required />
+        <input type="password" id="login-password" placeholder="Votre mot de passe" required />
+        <button id="boutton-connexion" type="submit">Se connecter</button>
+      </form>
 
-    <!-- Bouton de thème -->
-    <div class="theme-toggle">
-      <button onclick="toggleTheme()">Thème 🌓</button>
+      <!-- Form Inscription -->
+      <form id="signup-form" style="display: none;">
+        <input type="email" id="signup-email" placeholder="Votre email" required />
+        <input type="password" id="signup-password" placeholder="Votre mot de passe" required />
+        <button id="signup-button" type="submit">S'inscrire</button>
+      </form>
+
+      <!-- Liens -->
+      <p class="toggle-link" id="toggle-link">Pas encore de compte ? Inscrivez-vous ici.</p>
+      <p class="toggle-link" id="back-link" style="display: none;">Déjà un compte ? Connectez-vous ici.</p>
+
+      <!-- Messages -->
+      <p id="error-message" class="error-message"></p>
+      <p id="success-message" class="success-message"></p>
+
+      <!-- Bouton Thème -->
+      <div class="theme-toggle">
+        <button onclick="toggleTheme()">Thème 🌓</button>
+      </div>
+
     </div>
   </div>
-
 </body>
 </html>
