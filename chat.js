@@ -308,4 +308,11 @@ accordions.forEach(acc => {
     }
   });
 });
+document.addEventListener("DOMContentLoaded", () => {
+  const box = document.getElementById("commandBox");
+
+  box.addEventListener("click", () => {
+    box.classList.toggle("closed");
+  });
+});
 
