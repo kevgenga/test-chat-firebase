@@ -9,64 +9,66 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- Styles -->
   <link rel="stylesheet" href="chat.css" />
+
+  <!-- Script principal -->
   <script src="chat.js" defer></script>
 </head>
-<body>
-  <!-- Barre des membres en ligne -->
-<div class="online-users-bar">
-  <span>Membres en ligne :</span>
-  <ul id="online-users-list"></ul>
-</div>
+
+<body class="light">
+
+  <!-- Logo et Titre -->
   <div class="logo-title">
-      <div id="image-logo">
-        <a href="edit-profil.html"><img src="assets/logo sans fond.png"></a>
-      </div>
-      <h1 id="titre-du-chat">CHATBOX ROOM ADMIN</h1>
-  </div>  
-  
-
-  <ul id="messages"></ul>
-
-  <div>
-    <input type="text" id="messageInput" placeholder="Tapez votre message..." autocomplete="off" disabled>
-    <button id="bouton-envoyer" onclick="sendMessage()" disabled>Envoyer</button>
-    <button id="bouton-profil" onclick="window.location.href='edit-profil.html'">Éditer mon profil</button>
+    <div id="image-logo">
+      <a href="edit-profil.html">
+        <img src="assets/logo%20sans%20fond.png" alt="Logo">
+      </a>
+    </div>
+    <h1 id="titre-du-chat">CHATBOX ROOM ADMIN</h1>
   </div>
 
-  <button id="logout-button">Se déconnecter</button>
-  <button id="theme-toggle">Thème 🌓</button>
+  <!-- Conteneur principal horizontal -->
+  <div class="chat-layout">
+    
+    <!-- Boîte de commandes à gauche -->
+    <aside class="commandes-container">
+      <h3>Commandes</h3>
+      <ul>
+        <li><strong>/shrug</strong> → Affiche ¯\_(ツ)_/¯</li>
+        <li><strong>/roll</strong> → Lancer un dé à 6 faces</li>
+        <li><strong>/flip</strong> → Pile ou face</li>
+        <li><strong>/dice [n]</strong> → Lancer un dé avec n faces</li>
+        <li><strong>/joke</strong> → Blague aléatoire</li>
+        <li><strong>/say [texte]</strong> → Répète ton texte</li>
+        <li><strong>/clear</strong> → Supprime tous tes messages</li>
+        <li><strong>/help</strong> → Affiche cette liste</li>
+      </ul>
+    </aside>
 
-    <button class="accordion floating-box">Commandes de chat</button>
-<div class="panel floating-panel">
-  <ul>
-    <li><strong>/help</strong> : Affiche la liste des commandes</li>
-    <li><strong>/ban pseudo</strong> : Bannir un utilisateur</li>
-    <li><strong>/kick pseudo</strong> : Expulser un utilisateur</li>
-    <li><strong>/me texte</strong> : Affiche une action roleplay</li>
-    <li><strong>/clear</strong> : Nettoyer le chat</li>
-  </ul>
-</div>
-    <div class="command-box closed" id="commandBox">
-    <h3>Commandes de chat</h3>
-    <ul>
-      <li><strong>/miaou</strong> : Le chat miaule</li>
-      <li><strong>/ronron</strong> : Le chat ronronne</li>
-      <li><strong>/dodo</strong> : Le chat fait la sieste</li>
-      <li><strong>/joue</strong> : Le chat joue avec une pelote</li>
-      <li><strong>/lèche</strong> : Le chat te lèche la main</li>
-      <li><strong>/shrug</strong> → ¯\_(ツ)_/¯</li>
-      <li><strong>/roll</strong> → Lancer un dé 6 faces</li>
-      <li><strong>/flip</strong> → Pile ou face</li>
-      <li><strong>/dice [n]</strong> → Lancer un dé à n faces</li>
-      <li><strong>/joke</strong> → Blague aléatoire</li>
-      <li><strong>/say [texte]</strong> → Répète ton texte</li>
-      <li><strong>/clear</strong> → Supprime tous tes messages</li>
-      <li><strong>/help</strong> → Affiche la liste des commandes</li>
-    </ul>
+    <!-- Conteneur du chat au centre -->
+    <div class="chat-container">
+      <div class="messages-container" id="messages"></div>
+
+      <!-- Formulaire d'envoi de message -->
+      <form id="messageForm">
+        <input type="text" id="messageInput" placeholder="Tapez votre message..." autocomplete="off" />
+        <button type="submit" id="bouton-envoyer">Envoyer</button>
+      </form>
+
+      <button id="bouton-profil" onclick="window.location.href='edit-profil.html'">Éditer mon profil</button>
+    </div>
+
+    <!-- Membres en ligne à droite -->
+    <div class="online-users-container" id="online-users-container">
+      <h3>Membres en ligne</h3>
+      <ul id="online-users-list">
+        <!-- Utilisateurs en ligne (injectés dynamiquement) -->
+      </ul>
+    </div>
+
   </div>
-
-  <script src="script.js"></script>
 
 </body>
 </html>
