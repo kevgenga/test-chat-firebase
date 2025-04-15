@@ -321,5 +321,48 @@
   width: 50px;
   height: auto; /* préserve les proportions */
 }
-
+.accordion {
+    background-color: #f2f2f2;
+    color: #333;
+    cursor: pointer;
+    padding: 15px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  
+  .accordion:hover {
+    background-color: #ddd;
+  }
+  
+  .panel {
+    padding: 0 15px;
+    display: none;
+    background-color: #fafafa;
+    overflow: hidden;
+    border-left: 3px solid #ccc;
+    border-radius: 0 0 8px 8px;
+  }
+  
+  .floating-box {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 220px;
+    z-index: 1000;
+    margin-bottom: 0;
+  }
+  
+  .floating-panel {
+    position: fixed;
+    top: 65px; /* ajusté sous le bouton */
+    left: 20px;
+    width: 220px;
+    z-index: 999;
+  }
   
