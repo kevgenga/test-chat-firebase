@@ -232,7 +232,6 @@ if (adminIds.includes(userId)) {
     ];
     return `😂 ${blagues[Math.floor(Math.random() * blagues.length)]}`;
   }
-  if (lower.startsWith("/say ")) return trimmed.slice(5);
   if (lower === "/help") {
     return `📜 Commandes disponibles :
 /shrug → ¯\\_(ツ)_/¯
@@ -240,7 +239,6 @@ if (adminIds.includes(userId)) {
 /flip → Pile ou face
 /dice [n] → Lancer un dé à n faces
 /joke → Blague aléatoire
-/say [texte] → Répète ton texte
 /clear → Effacer tous les messages (admin)
 /help → Affiche cette liste`;
   }
