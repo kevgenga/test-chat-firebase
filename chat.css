@@ -289,7 +289,7 @@
   text-align: center;            /* Centré */
   margin: 20px auto;             /* Marges haut/bas et centrage horizontal */
   padding: 0 20px;               /* Un peu d’espace sur les côtés */
-  max-width: 90vw;               /* Évite que ça touche les bords */
+  max-width: 120vw;               /* Évite que ça touche les bords */
   box-sizing: border-box;        /* Padding pris en compte dans la largeur */
 }
 
