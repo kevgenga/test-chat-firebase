@@ -85,7 +85,7 @@ function initializeChat() {
           userNameElement.appendChild(vousSpan);
           userNameElement.appendChild(document.createTextNode(userName));
         } else {
-          userNameElement.textContent = (data.pseudo || "Utilisateur") + " > ";
+          userNameElement.textContent = (data.pseudo || "Utilisateur") + "";
           userNameElement.appendChild(userLink);
         }
 
