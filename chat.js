@@ -195,8 +195,8 @@ function traiterCommandes(message) {
   if (trimmed === "/shrug") return "¯\\_(ツ)_/¯";
   if (trimmed === "/roll") return `🎲 Tu as lancé un dé 6 faces... Résultat : ${Math.floor(Math.random() * 6) + 1}`;
   if (trimmed === "/flip") return `🪙 Tu as lancé une pièce... Résultat : ${Math.random() < 0.5 ? "Pile" : "Face"}`;
-  if (trimmed.startsWith("/dice "))
-  if (trimmed === "/clear") return "clear everithing; 
+  if (trimmed.startsWith("/dice "));
+   
   
   {
     const nombreFaces = parseInt(trimmed.split(" ")[1]);
