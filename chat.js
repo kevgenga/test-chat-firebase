@@ -133,7 +133,12 @@ function sendMessage(e) {
   if (!content || !userId) return;
 
   const processedMessage = traiterCommandes(content);
-  if (!processedMessage) return;
+
+  // Ajout de la condition pour alerter si le message est vide ou invalide
+  if (!processedMessage) {
+    alert("Le message n'a pas pu être envoyé.");
+    return;
+  }
 
   const userEmail = auth.currentUser.email;
 
@@ -144,11 +149,14 @@ function sendMessage(e) {
     content: processedMessage,
     participants: [userId, userEmail],
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    input.value = '';
+    console.log("Envoi du message par :", userName);
+  }).catch(error => {
+    console.error("Erreur lors de l'envoi du message :", error);
   });
-
-  input.value = '';
-  console.log("Envoi du message par :", userName);
 }
+
 
 // Déconnexion
 document.getElementById('logout-button').addEventListener('click', () => {
@@ -190,13 +198,24 @@ document.getElementById('messageInput').addEventListener('keydown', function (ev
 
 // Gestion des commandes
 function traiterCommandes(message) {
-  const trimmed = message.trim().toLowerCase();
+  const trimmed = message.trim();
 
-  if (trimmed === "/shrug") return "¯\\_(ツ)_/¯";
-  if (trimmed === "/roll") return `🎲 Tu as lancé un dé 6 faces... Résultat : ${Math.floor(Math.random() * 6) + 1}`;
-  if (trimmed === "/flip") return `🪙 Tu as lancé une pièce... Résultat : ${Math.random() < 0.5 ? "Pile" : "Face"}`;
-  
-  if (trimmed.startsWith("/dice ")) {
+  if (trimmed.toLowerCase() === "/clear") {
+const adminIds = ['FQ7R58GLXdOeOHkk7uWnOmAcnHN2', '4QketXCQoxa0CksneAgMlPfdMGN2'];
+if (adminIds.includes(userId)) {
+      clearChat(); // Appelle la fonction d'effacement
+    } else {
+      alert("Tu n'as pas la permission de faire ça.");
+    }
+    return null; // On ne traite pas plus loin le message
+  }
+
+  const lower = trimmed.toLowerCase();
+
+  if (lower === "/shrug") return "¯\\_(ツ)_/¯";
+  if (lower === "/roll") return `🎲 Tu as lancé un dé 6 faces... Résultat : ${Math.floor(Math.random() * 6) + 1}`;
+  if (lower === "/flip") return `🪙 Tu as lancé une pièce... Résultat : ${Math.random() < 0.5 ? "Pile" : "Face"}`;
+  if (lower.startsWith("/dice ")) {
     const nombreFaces = parseInt(trimmed.split(" ")[1]);
     if (!isNaN(nombreFaces) && nombreFaces > 1) {
       return `🎲 Tu as lancé un dé ${nombreFaces} faces... Résultat : ${Math.floor(Math.random() * nombreFaces) + 1}`;
@@ -204,8 +223,7 @@ function traiterCommandes(message) {
       return "⚠️ Utilise la commande comme ceci : /dice 20";
     }
   }
-
-  if (trimmed === "/joke") {
+  if (lower === "/joke") {
     const blagues = [
       "Pourquoi les canards ont-ils autant de plumes ? Pour couvrir leur derrière.",
       "Un SQL entre dans un bar, va jusqu'à deux tables et leur demande : 'Puis-je vous joindre ?'",
@@ -214,15 +232,8 @@ function traiterCommandes(message) {
     ];
     return `😂 ${blagues[Math.floor(Math.random() * blagues.length)]}`;
   }
-
-  if (trimmed.startsWith("/say ")) return message.slice(5);
-
-  if (trimmed === "/clear") {
-    clearMessages(); // Appelle la fonction de suppression
-    return null; // On ne veut pas envoyer ce message à la DB
-  }
-
-  if (trimmed === "/help") {
+  if (lower.startsWith("/say ")) return trimmed.slice(5);
+  if (lower === "/help") {
     return `📜 Commandes disponibles :
 /shrug → ¯\\_(ツ)_/¯
 /roll → Lancer un dé 6 faces
@@ -230,12 +241,34 @@ function traiterCommandes(message) {
 /dice [n] → Lancer un dé à n faces
 /joke → Blague aléatoire
 /say [texte] → Répète ton texte
-/clear → Supprime tous tes messages
+/clear → Effacer tous les messages (admin)
 /help → Affiche cette liste`;
   }
 
-  return message; // Message classique
+  return trimmed; // Message classique
 }
+
+function clearChat() {
+  if (!confirm("⚠️ Es-tu sûr de vouloir supprimer **tous les messages** ?")) return;
+
+  db.collection("messages")
+    .get()
+    .then(snapshot => {
+      const batch = db.batch();
+      snapshot.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+      return batch.commit();
+    })
+    .then(() => {
+      alert("✅ Tous les messages ont été supprimés !");
+    })
+    .catch(error => {
+      console.error("Erreur lors de la suppression des messages :", error);
+      alert("❌ Une erreur est survenue lors de la suppression.");
+    });
+}
+
 
 function clearMessages() {
   db.collection("messages")
@@ -263,7 +296,6 @@ function clearMessages() {
 
 // Clic bouton envoyer
 document.getElementById('bouton-envoyer').addEventListener('click', sendMessage);
-s
 const accordions = document.querySelectorAll('.accordion');
 
 accordions.forEach(acc => {
