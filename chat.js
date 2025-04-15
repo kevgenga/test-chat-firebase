@@ -276,4 +276,12 @@ function traiterCommandes(message) {
 
   return message; // Si aucune commande, on renvoie le message d'origine
 }
-
+// ✅ Bouton de déconnexion
+document.getElementById('logout-button').addEventListener('click', () => {
+  firebase.auth().signOut().then(() => {
+    window.location.href = "index.html"; // Redirection vers la page de connexion
+  }).catch(error => {
+    console.error("Erreur lors de la déconnexion :", error);
+    alert("Erreur lors de la déconnexion.");
+  });
+});
