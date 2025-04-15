@@ -230,3 +230,18 @@ function traiterCommandes(message) {
 // Clic bouton envoyer
 document.getElementById('bouton-envoyer').addEventListener('click', sendMessage);
 s
+const accordions = document.querySelectorAll('.accordion');
+
+accordions.forEach(acc => {
+  acc.addEventListener('click', function () {
+    this.classList.toggle('active');
+    const panel = this.nextElementSibling;
+
+    if (panel.style.display === "block") {
+      panel.style.display = "none";
+    } else {
+      panel.style.display = "block";
+    }
+  });
+});
+
