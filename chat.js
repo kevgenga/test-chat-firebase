@@ -195,10 +195,8 @@ function traiterCommandes(message) {
   if (trimmed === "/shrug") return "¯\\_(ツ)_/¯";
   if (trimmed === "/roll") return `🎲 Tu as lancé un dé 6 faces... Résultat : ${Math.floor(Math.random() * 6) + 1}`;
   if (trimmed === "/flip") return `🪙 Tu as lancé une pièce... Résultat : ${Math.random() < 0.5 ? "Pile" : "Face"}`;
-  if (trimmed.startsWith("/dice "));
-   
   
-  {
+  if (trimmed.startsWith("/dice ")) {
     const nombreFaces = parseInt(trimmed.split(" ")[1]);
     if (!isNaN(nombreFaces) && nombreFaces > 1) {
       return `🎲 Tu as lancé un dé ${nombreFaces} faces... Résultat : ${Math.floor(Math.random() * nombreFaces) + 1}`;
@@ -206,6 +204,7 @@ function traiterCommandes(message) {
       return "⚠️ Utilise la commande comme ceci : /dice 20";
     }
   }
+
   if (trimmed === "/joke") {
     const blagues = [
       "Pourquoi les canards ont-ils autant de plumes ? Pour couvrir leur derrière.",
@@ -215,7 +214,14 @@ function traiterCommandes(message) {
     ];
     return `😂 ${blagues[Math.floor(Math.random() * blagues.length)]}`;
   }
+
   if (trimmed.startsWith("/say ")) return message.slice(5);
+
+  if (trimmed === "/clear") {
+    clearMessages(); // Appelle la fonction de suppression
+    return null; // On ne veut pas envoyer ce message à la DB
+  }
+
   if (trimmed === "/help") {
     return `📜 Commandes disponibles :
 /shrug → ¯\\_(ツ)_/¯
@@ -224,11 +230,36 @@ function traiterCommandes(message) {
 /dice [n] → Lancer un dé à n faces
 /joke → Blague aléatoire
 /say [texte] → Répète ton texte
+/clear → Supprime tous tes messages
 /help → Affiche cette liste`;
   }
 
   return message; // Message classique
 }
+
+function clearMessages() {
+  db.collection("messages")
+    .where("from", "==", userId)
+    .get()
+    .then(snapshot => {
+      const batch = db.batch();
+      snapshot.forEach(doc => batch.delete(doc.ref));
+      return batch.commit();
+    })
+    .then(() => {
+      console.log("✅ Messages supprimés");
+      const messagesList = document.getElementById('messages');
+      const li = document.createElement('li');
+      li.classList.add("system-message");
+      li.textContent = "🧹 Tous vos messages ont été supprimés.";
+      messagesList.appendChild(li);
+      messagesList.scrollTop = messagesList.scrollHeight;
+    })
+    .catch(error => {
+      console.error("Erreur lors de la suppression des messages :", error);
+    });
+}
+
 
 // Clic bouton envoyer
 document.getElementById('bouton-envoyer').addEventListener('click', sendMessage);
