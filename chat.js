@@ -13,14 +13,12 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 let userId = null;
-let userName = 'Utilisateur'; // Valeur par défaut
+let userName = 'Utilisateur';
 
 auth.onAuthStateChanged((user) => {
   if (user) {
     userId = user.uid;
-    userName = user.displayName || 'Utilisateur'; // Récupérer le pseudo ou utiliser "Utilisateur" par défaut
-    
-    // Si le pseudo est manquant, on demande à l'utilisateur de le définir
+    userName = user.displayName || 'Utilisateur';
     if (!user.displayName) {
       setUserName();
     } else {
@@ -31,7 +29,6 @@ auth.onAuthStateChanged((user) => {
   }
 });
 
-// Fonction pour demander un pseudo à l'utilisateur
 function setUserName() {
   const newUserName = prompt("Veuillez définir votre pseudo :");
   if (newUserName) {
@@ -47,13 +44,11 @@ function setUserName() {
   }
 }
 
-// Initialisation du chat avec l'affichage des messages
 function initializeChat() {
   const messagesList = document.getElementById('messages');
   const messageInput = document.getElementById('messageInput');
   const sendButton = document.getElementById('bouton-envoyer');
 
-  // Activation du champ de saisie et du bouton d'envoi
   messageInput.disabled = false;
   sendButton.disabled = false;
 
@@ -75,38 +70,28 @@ function initializeChat() {
         const header = document.createElement('div');
         header.className = "message-header";
 
-        // VERSION AVEC PROFIL > VOUS ou VOUS > PROFIL
         const userNameElement = document.createElement('div');
         userNameElement.className = "message-user";
 
-        // Créer le lien vers le profil
         const userLink = document.createElement('a');
         userLink.href = `public-profil.html?user=${data.from}`;
         userLink.textContent = "Profil";
         userLink.classList.add("user-link");
 
-        // Si c'est l'utilisateur connecté → "Profil > Vous"
         if (data.from === userId) {
           const vousSpan = document.createElement("span");
           vousSpan.textContent = "(Vous) ";
-          vousSpan.classList.add("vous-label"); // Classe CSS spéciale pour "Vous"
+          vousSpan.classList.add("vous-label");
           userNameElement.appendChild(vousSpan);
           userNameElement.appendChild(document.createTextNode(userName));
-        
-          // // Ajout du lien vers ton profil de l'utilisateur (PUBLIC PROFIL)
-          // userNameElement.appendChild(userLink);
-        
         } else {
-          // Sinon → "NomUtilisateur > Profil"
-          userNameElement.textContent = (data.pseudo || "Utilisateur") + "";
+          userNameElement.textContent = (data.pseudo || "Utilisateur") + " > ";
           userNameElement.appendChild(userLink);
         }
-        // fin VERSION AVEC PROFIL
 
         const messageText = document.createElement('div');
-        messageText.className = "message-text";
-        messageText.innerHTML = linkify(data.content); // Utilisation de la fonction linkify pour transformer les liens
-        messageText.classList.add("message-content");
+        messageText.className = "message-text message-content";
+        messageText.innerHTML = linkify(data.content);
 
         function linkify(text) {
           const urlPattern = /(\b(https?:\/\/)?[\w.-]+\.[a-z]{2,}(\S*)?)/gi;
@@ -126,7 +111,7 @@ function initializeChat() {
           : "Date inconnue";
 
         container.appendChild(avatar);
-        header.appendChild(userNameElement); // Ajout du nom d'utilisateur
+        header.appendChild(userNameElement);
         container.appendChild(header);
 
         li.appendChild(container);
@@ -140,18 +125,23 @@ function initializeChat() {
 }
 
 // Envoi du message dans Firestore
-function sendMessage() {
+function sendMessage(e) {
+  if (e) e.preventDefault();
+
   const input = document.getElementById('messageInput');
   const content = input.value.trim();
   if (!content || !userId) return;
+
+  const processedMessage = traiterCommandes(content);
+  if (!processedMessage) return;
 
   const userEmail = auth.currentUser.email;
 
   db.collection("messages").add({
     from: userId,
     email: userEmail,
-    pseudo: userName,  // Ajout du pseudo dans le message
-    content: content,
+    pseudo: userName,
+    content: processedMessage,
     participants: [userId, userEmail],
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
@@ -160,7 +150,7 @@ function sendMessage() {
   console.log("Envoi du message par :", userName);
 }
 
-// Déconnexion de l'utilisateur
+// Déconnexion
 document.getElementById('logout-button').addEventListener('click', () => {
   auth.signOut().then(() => {
     window.location.href = "index.html";
@@ -169,7 +159,7 @@ document.getElementById('logout-button').addEventListener('click', () => {
   });
 });
 
-// GESTION DU MODE SOMBRE / CLAIR
+// Mode sombre / clair
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 const savedTheme = localStorage.getItem('theme');
 const bodyClass = document.body.classList;
@@ -190,10 +180,53 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
   }
 });
 
-// Envoi du message avec la touche "Entrée"
+// Envoi avec touche "Entrée"
 document.getElementById('messageInput').addEventListener('keydown', function (event) {
   if (event.key === 'Enter' && !event.shiftKey) {
-    event.preventDefault(); // Empêche le saut de ligne
+    event.preventDefault();
     sendMessage();
   }
 });
+
+// Gestion des commandes
+function traiterCommandes(message) {
+  const trimmed = message.trim().toLowerCase();
+
+  if (trimmed === "/shrug") return "¯\\_(ツ)_/¯";
+  if (trimmed === "/roll") return `🎲 Tu as lancé un dé 6 faces... Résultat : ${Math.floor(Math.random() * 6) + 1}`;
+  if (trimmed === "/flip") return `🪙 Tu as lancé une pièce... Résultat : ${Math.random() < 0.5 ? "Pile" : "Face"}`;
+  if (trimmed.startsWith("/dice ")) {
+    const nombreFaces = parseInt(trimmed.split(" ")[1]);
+    if (!isNaN(nombreFaces) && nombreFaces > 1) {
+      return `🎲 Tu as lancé un dé ${nombreFaces} faces... Résultat : ${Math.floor(Math.random() * nombreFaces) + 1}`;
+    } else {
+      return "⚠️ Utilise la commande comme ceci : /dice 20";
+    }
+  }
+  if (trimmed === "/joke") {
+    const blagues = [
+      "Pourquoi les canards ont-ils autant de plumes ? Pour couvrir leur derrière.",
+      "Un SQL entre dans un bar, va jusqu'à deux tables et leur demande : 'Puis-je vous joindre ?'",
+      "Pourquoi JavaScript déteste Noël ? Parce qu’il n’aime pas les closures.",
+      "Que dit une variable à une autre ? Tu as changé, mec."
+    ];
+    return `😂 ${blagues[Math.floor(Math.random() * blagues.length)]}`;
+  }
+  if (trimmed.startsWith("/say ")) return message.slice(5);
+  if (trimmed === "/help") {
+    return `📜 Commandes disponibles :
+/shrug → ¯\\_(ツ)_/¯
+/roll → Lancer un dé 6 faces
+/flip → Pile ou face
+/dice [n] → Lancer un dé à n faces
+/joke → Blague aléatoire
+/say [texte] → Répète ton texte
+/help → Affiche cette liste`;
+  }
+
+  return message; // Message classique
+}
+
+// Clic bouton envoyer
+document.getElementById('bouton-envoyer').addEventListener('click', sendMessage);
+s
