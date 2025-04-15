@@ -315,4 +315,60 @@ document.addEventListener("DOMContentLoaded", () => {
     box.classList.toggle("closed");
   });
 });
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js";
+import { getFirestore, doc, setDoc, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js";
+
+// Configuration Firebase
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  // etc.
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Met à jour le statut de l'utilisateur à "en ligne"
+const setUserOnline = async (uid, email) => {
+  await setDoc(doc(db, "onlineUsers", uid), {
+    email: email,
+    lastSeen: serverTimestamp()
+  });
+};
+
+// Supprime l'utilisateur de la liste quand il quitte
+const removeUser = async (uid) => {
+  await setDoc(doc(db, "onlineUsers", uid), {}, { merge: true });
+};
+
+// Affiche les utilisateurs en ligne
+const displayOnlineUsers = () => {
+  const list = document.getElementById("online-users-list");
+  onSnapshot(collection(db, "onlineUsers"), (snapshot) => {
+    list.innerHTML = "";
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.email) {
+        const li = document.createElement("li");
+        li.textContent = data.email;
+        list.appendChild(li);
+      }
+    });
+  });
+};
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    await setUserOnline(user.uid, user.email);
+    displayOnlineUsers();
+
+    // Optionnel : Déconnexion automatique en quittant la page
+    window.addEventListener("beforeunload", () => {
+      removeUser(user.uid);
+    });
+  }
+});
 
