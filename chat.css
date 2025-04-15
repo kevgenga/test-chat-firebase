@@ -318,12 +318,12 @@
   margin-bottom: 15px;
 }
 #image-logo {
-  width: 50px;
+  width: 10px;
   height: auto; /* préserve les proportions */
 }
 
 .logo {
-  width: 40px;
+  width: 10px;
   height: auto;
 }
   
