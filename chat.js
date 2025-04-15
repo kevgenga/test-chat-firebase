@@ -195,7 +195,10 @@ function traiterCommandes(message) {
   if (trimmed === "/shrug") return "¯\\_(ツ)_/¯";
   if (trimmed === "/roll") return `🎲 Tu as lancé un dé 6 faces... Résultat : ${Math.floor(Math.random() * 6) + 1}`;
   if (trimmed === "/flip") return `🪙 Tu as lancé une pièce... Résultat : ${Math.random() < 0.5 ? "Pile" : "Face"}`;
-  if (trimmed.startsWith("/dice ")) {
+  if (trimmed.startsWith("/dice "))
+  if (trimmed === "/clear") return "clear everithing; 
+  
+  {
     const nombreFaces = parseInt(trimmed.split(" ")[1]);
     if (!isNaN(nombreFaces) && nombreFaces > 1) {
       return `🎲 Tu as lancé un dé ${nombreFaces} faces... Résultat : ${Math.floor(Math.random() * nombreFaces) + 1}`;
@@ -221,8 +224,7 @@ function traiterCommandes(message) {
 /dice [n] → Lancer un dé à n faces
 /joke → Blague aléatoire
 /say [texte] → Répète ton texte
-/help → Affiche cette liste`
-/clear → effacer le chat;
+/help → Affiche cette liste`;
   }
 
   return message; // Message classique
