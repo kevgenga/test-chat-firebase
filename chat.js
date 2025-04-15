@@ -221,7 +221,8 @@ function traiterCommandes(message) {
 /dice [n] → Lancer un dé à n faces
 /joke → Blague aléatoire
 /say [texte] → Répète ton texte
-/help → Affiche cette liste`;
+/help → Affiche cette liste`
+/clear → effacer le chat;
   }
 
   return message; // Message classique
