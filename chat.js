@@ -23,6 +23,8 @@ auth.onAuthStateChanged((user) => {
       setUserName();
     } else {
       initializeChat();
+      updateOnlineStatus();  // Mettre à jour le statut de l'utilisateur comme "en ligne"
+      updateOnlineUsersRealtime();  // Met à jour la liste des utilisateurs en ligne
     }
   } else {
     window.location.href = "index.html";
@@ -38,6 +40,8 @@ function setUserName() {
       displayName: userName
     }).then(() => {
       initializeChat();
+      updateOnlineStatus();
+      updateOnlineUsersRealtime();
     }).catch((error) => {
       console.error("Erreur lors de la mise à jour du pseudo : ", error);
     });
@@ -124,21 +128,17 @@ function initializeChat() {
     });
 }
 
+
 // Envoi du message dans Firestore
 function sendMessage(e) {
-  if (e) e.preventDefault();
+  if (e) e.preventDefault();  // Empêche le rechargement de la page
 
   const input = document.getElementById('messageInput');
   const content = input.value.trim();
   if (!content || !userId) return;
 
   const processedMessage = traiterCommandes(content);
-
-  // Ajout de la condition pour alerter si le message est vide ou invalide
-  if (!processedMessage) {
-    alert("Le message n'a pas pu être envoyé.");
-    return;
-  }
+  if (!processedMessage) return;
 
   const userEmail = auth.currentUser.email;
 
@@ -149,14 +149,75 @@ function sendMessage(e) {
     content: processedMessage,
     participants: [userId, userEmail],
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(() => {
-    input.value = '';
-    console.log("Envoi du message par :", userName);
-  }).catch(error => {
-    console.error("Erreur lors de l'envoi du message :", error);
+  });
+
+  input.value = ''; // Réinitialise le champ de saisie
+  console.log("Envoi du message par :", userName);
+}
+
+// Remplacer le clic sur le bouton d'envoi par un formulaire
+document.getElementById('messageForm').addEventListener('submit', sendMessage);
+
+
+// Fonction pour mettre à jour le statut en ligne de l'utilisateur
+function updateOnlineStatus() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const onlineRef = db.collection("onlineUsers").doc(user.uid);
+
+  onlineRef.set({
+    uid: user.uid,
+    pseudo: user.displayName || 'Utilisateur',
+    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  // Supprimer l'utilisateur quand il quitte la page
+  window.addEventListener('beforeunload', () => {
+    onlineRef.delete();
   });
 }
 
+// Fonction pour afficher les utilisateurs en ligne
+function updateOnlineUsersRealtime() {
+  const onlineUsersList = document.getElementById('online-users-list');
+
+  db.collection("onlineUsers")
+    .orderBy("lastSeen", "desc")  // Trier par dernière activité
+    .onSnapshot(snapshot => {
+      onlineUsersList.innerHTML = '';  // Vider la liste avant de la mettre à jour
+
+      snapshot.forEach(doc => {
+        const user = doc.data();
+        const li = document.createElement('li');
+        li.classList.add('online');
+        li.textContent = user.pseudo || "Utilisateur";  // Afficher le pseudo
+        onlineUsersList.appendChild(li);
+      });
+    });
+}
+
+// Nettoyage des utilisateurs inactifs
+function cleanupInactiveUsers() {
+  const now = firebase.firestore.Timestamp.now();
+  const maxInactiveDuration = 5 * 60 * 1000;  // 5 minutes
+
+  db.collection("onlineUsers")
+    .get()
+    .then(snapshot => {
+      snapshot.forEach(doc => {
+        const user = doc.data();
+        const lastSeen = user.lastSeen.toMillis();
+
+        if (now - lastSeen > maxInactiveDuration) {
+          db.collection("onlineUsers").doc(user.uid).delete();
+        }
+      });
+    });
+}
+
+// Appel périodique de nettoyage
+setInterval(cleanupInactiveUsers, 60 * 1000);  // Toutes les 60 secondes
 
 // Déconnexion
 document.getElementById('logout-button').addEventListener('click', () => {
@@ -198,177 +259,21 @@ document.getElementById('messageInput').addEventListener('keydown', function (ev
 
 // Gestion des commandes
 function traiterCommandes(message) {
-  const trimmed = message.trim();
+  const trimmed = message.trim().toLowerCase();
 
-  if (trimmed.toLowerCase() === "/clear") {
-const adminIds = ['FQ7R58GLXdOeOHkk7uWnOmAcnHN2', '4QketXCQoxa0CksneAgMlPfdMGN2'];
-if (adminIds.includes(userId)) {
-      clearChat(); // Appelle la fonction d'effacement
-    } else {
-      alert("Tu n'as pas la permission de faire ça.");
-    }
-    return null; // On ne traite pas plus loin le message
-  }
-
-  const lower = trimmed.toLowerCase();
-
-  if (lower === "/shrug") return "¯\\_(ツ)_/¯";
-  if (lower === "/roll") return `🎲 Tu as lancé un dé 6 faces... Résultat : ${Math.floor(Math.random() * 6) + 1}`;
-  if (lower === "/flip") return `🪙 Tu as lancé une pièce... Résultat : ${Math.random() < 0.5 ? "Pile" : "Face"}`;
-  if (lower.startsWith("/dice ")) {
+  if (trimmed === "/shrug") return "¯\\_(ツ)_/¯";
+  if (trimmed === "/roll") return `🎲 Tu as lancé un dé 6 faces... Résultat : ${Math.floor(Math.random() * 6) + 1}`;
+  if (trimmed === "/flip") return `🪙 Tu as lancé une pièce... Résultat : ${Math.random() < 0.5 ? "Pile" : "Face"}`;
+  
+  if (trimmed.startsWith("/dice ")) {
     const nombreFaces = parseInt(trimmed.split(" ")[1]);
     if (!isNaN(nombreFaces) && nombreFaces > 1) {
       return `🎲 Tu as lancé un dé ${nombreFaces} faces... Résultat : ${Math.floor(Math.random() * nombreFaces) + 1}`;
     } else {
-      return "⚠️ Utilise la commande comme ceci : /dice 20";
+      return "⚠️ Utilisation : /dice <nombre de faces>";
     }
   }
-  if (lower === "/joke") {
-    const blagues = [
-      "Pourquoi les canards ont-ils autant de plumes ? Pour couvrir leur derrière.",
-      "Un SQL entre dans un bar, va jusqu'à deux tables et leur demande : 'Puis-je vous joindre ?'",
-      "Pourquoi JavaScript déteste Noël ? Parce qu’il n’aime pas les closures.",
-      "Que dit une variable à une autre ? Tu as changé, mec."
-    ];
-    return `😂 ${blagues[Math.floor(Math.random() * blagues.length)]}`;
-  }
-  if (lower === "/help") {
-    return `📜 Commandes disponibles :
-/shrug → ¯\\_(ツ)_/¯
-/roll → Lancer un dé 6 faces
-/flip → Pile ou face
-/dice [n] → Lancer un dé à n faces
-/joke → Blague aléatoire
-/clear → Effacer tous les messages (admin)
-/help → Affiche cette liste`;
-  }
 
-  return trimmed; // Message classique
+  return message; // Si aucune commande, on renvoie le message d'origine
 }
-
-function clearChat() {
-  if (!confirm("⚠️ Es-tu sûr de vouloir supprimer **tous les messages** ?")) return;
-
-  db.collection("messages")
-    .get()
-    .then(snapshot => {
-      const batch = db.batch();
-      snapshot.forEach(doc => {
-        batch.delete(doc.ref);
-      });
-      return batch.commit();
-    })
-    .then(() => {
-      alert("✅ Tous les messages ont été supprimés !");
-    })
-    .catch(error => {
-      console.error("Erreur lors de la suppression des messages :", error);
-      alert("❌ Une erreur est survenue lors de la suppression.");
-    });
-}
-
-
-function clearMessages() {
-  db.collection("messages")
-    .where("from", "==", userId)
-    .get()
-    .then(snapshot => {
-      const batch = db.batch();
-      snapshot.forEach(doc => batch.delete(doc.ref));
-      return batch.commit();
-    })
-    .then(() => {
-      console.log("✅ Messages supprimés");
-      const messagesList = document.getElementById('messages');
-      const li = document.createElement('li');
-      li.classList.add("system-message");
-      li.textContent = "🧹 Tous vos messages ont été supprimés.";
-      messagesList.appendChild(li);
-      messagesList.scrollTop = messagesList.scrollHeight;
-    })
-    .catch(error => {
-      console.error("Erreur lors de la suppression des messages :", error);
-    });
-}
-
-
-// Clic bouton envoyer
-document.getElementById('bouton-envoyer').addEventListener('click', sendMessage);
-const accordions = document.querySelectorAll('.accordion');
-
-accordions.forEach(acc => {
-  acc.addEventListener('click', function () {
-    this.classList.toggle('active');
-    const panel = this.nextElementSibling;
-
-    if (panel.style.display === "block") {
-      panel.style.display = "none";
-    } else {
-      panel.style.display = "block";
-    }
-  });
-});
-document.addEventListener("DOMContentLoaded", () => {
-  const box = document.getElementById("commandBox");
-
-  box.addEventListener("click", () => {
-    box.classList.toggle("closed");
-  });
-});
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js";
-import { getFirestore, doc, setDoc, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js";
-
-// Configuration Firebase
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  // etc.
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// Met à jour le statut de l'utilisateur à "en ligne"
-const setUserOnline = async (uid, email) => {
-  await setDoc(doc(db, "onlineUsers", uid), {
-    email: email,
-    lastSeen: serverTimestamp()
-  });
-};
-
-// Supprime l'utilisateur de la liste quand il quitte
-const removeUser = async (uid) => {
-  await setDoc(doc(db, "onlineUsers", uid), {}, { merge: true });
-};
-
-// Affiche les utilisateurs en ligne
-const displayOnlineUsers = () => {
-  const list = document.getElementById("online-users-list");
-  onSnapshot(collection(db, "onlineUsers"), (snapshot) => {
-    list.innerHTML = "";
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      if (data.email) {
-        const li = document.createElement("li");
-        li.textContent = data.email;
-        list.appendChild(li);
-      }
-    });
-  });
-};
-
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    await setUserOnline(user.uid, user.email);
-    displayOnlineUsers();
-
-    // Optionnel : Déconnexion automatique en quittant la page
-    window.addEventListener("beforeunload", () => {
-      removeUser(user.uid);
-    });
-  }
-});
 
