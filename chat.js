@@ -105,7 +105,19 @@ function initializeChat() {
 
         const messageText = document.createElement('div');
         messageText.className = "message-text";
-        messageText.textContent = data.content;
+        messageText.innerHTML = linkify(data.content); // Utilisation de la fonction linkify pour transformer les liens
+        messageText.classList.add("message-content");
+
+        function linkify(text) {
+          const urlPattern = /(\b(https?:\/\/)?[\w.-]+\.[a-z]{2,}(\S*)?)/gi;
+          return text.replace(urlPattern, function (url) {
+            let hyperlink = url;
+            if (!hyperlink.startsWith("http")) {
+              hyperlink = "https://" + hyperlink;
+            }
+            return `<a href="${hyperlink}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+          });
+        }
 
         const timestamp = document.createElement('div');
         timestamp.className = "message-timestamp";
