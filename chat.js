@@ -285,3 +285,30 @@ document.getElementById('logout-button').addEventListener('click', () => {
     alert("Erreur lors de la déconnexion.");
   });
 });
+  <!-- Script pour thème clair/sombre -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const savedTheme = localStorage.getItem('theme');
+      const bodyClass = document.body.classList;
+
+      if (savedTheme) {
+        bodyClass.add(savedTheme);
+      } else {
+        bodyClass.add(prefersDark ? 'dark' : 'light');
+      }
+
+      const toggleButton = document.getElementById('theme-toggle');
+      if (toggleButton) {
+        toggleButton.addEventListener('click', () => {
+          if (bodyClass.contains('dark')) {
+            bodyClass.replace('dark', 'light');
+            localStorage.setItem('theme', 'light');
+          } else {
+            bodyClass.replace('light', 'dark');
+            localStorage.setItem('theme', 'dark');
+          }
+        });
+      }
+    });
+  </script>
