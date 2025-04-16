@@ -12,6 +12,50 @@
     padding: 2rem;
   }
   
+  /* ========== MODE CLAIR ========== */
+  body.light {
+    background-color: #f4f6f8;
+    color: #333;
+  }
+  
+  body.light #profil-container {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  body.light input,
+  body.light button {
+    background-color: #ffffff;
+    color: #333;
+  }
+  
+  body.light input {
+    border: 1px solid #ccc;
+  }
+  
+  /* ========== MODE SOMBRE ========== */
+  body.dark {
+    background-color: #121212;
+    color: #e0e0e0;
+  }
+  
+  body.dark #profil-container {
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  body.dark input,
+  body.dark button {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+  }
+  
+  body.dark input {
+    border: 1px solid #444;
+  }
+  
   /* ========== CONTAINER PRINCIPAL ========== */
   #profil-container {
     max-width: 500px;
@@ -198,48 +242,4 @@
     button {
       margin: 0.3rem 0;
     }
-  }
-  
-  /* ========== MODE CLAIR ========== */
-  body.light {
-    background-color: #f4f6f8;
-    color: #333;
-  }
-  
-  body.light #profil-container {
-    background-color: #ffffff;
-    border: 1px solid #ddd;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  }
-  
-  body.light input,
-  body.light button {
-    background-color: #ffffff;
-    color: #333;
-  }
-  
-  body.light input {
-    border: 1px solid #ccc;
-  }
-  
-  /* ========== MODE SOMBRE ========== */
-  body.dark {
-    background-color: #121212;
-    color: #e0e0e0;
-  }
-  
-  body.dark #profil-container {
-    background-color: #1e1e1e;
-    border: 1px solid #444;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-  
-  body.dark input,
-  body.dark button {
-    background-color: #2a2a2a;
-    color: #e0e0e0;
-  }
-  
-  body.dark input {
-    border: 1px solid #444;
   }
