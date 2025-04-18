@@ -25,6 +25,11 @@ auth.onAuthStateChanged((user) => {
       initializeChat();
       updateOnlineStatus();  // Mettre à jour le statut de l'utilisateur comme "en ligne"
       updateOnlineUsersRealtime();  // Met à jour la liste des utilisateurs en ligne
+      const userIcon = document.createElement("span");
+userIcon.textContent = "👑"; // Ajoute l'emoji 👑
+userIcon.classList.add("admin-icon"); // Ajoute une classe si nécessaire
+document.querySelector(".message-avatar").appendChild(userIcon);
+
     }
   } else {
     window.location.href = "index.html";
