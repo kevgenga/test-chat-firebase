@@ -129,6 +129,11 @@ body.dark .message-user {
   color: rgb(255, 255, 255);
 }
 
+.message-user.admin::after {
+  content: ' 👑'; /* Emoji pour les administrateurs */
+  color: gold;
+}
+
 .vous-label {
   font-size: 12px;
   color: #888;
@@ -364,6 +369,7 @@ button:hover {
 #online-users-list li.offline {
   color: red;
 }
+
 /* Conteneur principal qui va contenir le chat et la boîte des commandes */
 .chat-container {
   display: flex;
@@ -404,6 +410,7 @@ button:hover {
   font-weight: bold;
   color: #007bff;
 }
+
 /* 📦 Commandes à gauche */
 .commandes-container {
   width: 250px;
