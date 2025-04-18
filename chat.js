@@ -14,27 +14,36 @@ const db = firebase.firestore();
 
 let userId = null;
 let userName = 'Utilisateur';
+let isAdmin = false;  // Variable pour vérifier si l'utilisateur est admin
 
 auth.onAuthStateChanged((user) => {
   if (user) {
     userId = user.uid;
     userName = user.displayName || 'Utilisateur';
+    checkIfAdmin(userId);  // Vérifier si l'utilisateur est un admin
     if (!user.displayName) {
       setUserName();
     } else {
       initializeChat();
       updateOnlineStatus();  // Mettre à jour le statut de l'utilisateur comme "en ligne"
       updateOnlineUsersRealtime();  // Met à jour la liste des utilisateurs en ligne
-      const userIcon = document.createElement("span");
-userIcon.textContent = "👑"; // Ajoute l'emoji 👑
-userIcon.classList.add("admin-icon"); // Ajoute une classe si nécessaire
-document.querySelector(".message-avatar").appendChild(userIcon);
-
+      displayAdminIcon();  // Afficher l'emoji 👑 si l'utilisateur est admin
     }
   } else {
     window.location.href = "index.html";
   }
 });
+
+function checkIfAdmin(userId) {
+  // Vérifie si l'utilisateur est un administrateur dans Firestore
+  db.collection("users").doc(userId).get().then((doc) => {
+    if (doc.exists && doc.data().isAdmin) {
+      isAdmin = true;
+    } else {
+      isAdmin = false;
+    }
+  });
+}
 
 function setUserName() {
   const newUserName = prompt("Veuillez définir votre pseudo :");
@@ -47,6 +56,7 @@ function setUserName() {
       initializeChat();
       updateOnlineStatus();
       updateOnlineUsersRealtime();
+      displayAdminIcon();  // Afficher l'emoji 👑 si l'utilisateur est admin
     }).catch((error) => {
       console.error("Erreur lors de la mise à jour du pseudo : ", error);
     });
@@ -86,6 +96,14 @@ function initializeChat() {
         userLink.href = `public-profil.html?user=${data.from}`;
         userLink.textContent = "Profil";
         userLink.classList.add("user-link");
+
+        // Ajout de l'emoji 👑 si l'utilisateur est admin
+        if (data.isAdmin) {
+          const userIcon = document.createElement("span");
+          userIcon.textContent = "👑";
+          userIcon.classList.add("admin-icon");
+          userNameElement.appendChild(userIcon);
+        }
 
         if (data.from === userId) {
           const vousSpan = document.createElement("span");
@@ -133,7 +151,6 @@ function initializeChat() {
     });
 }
 
-
 // Envoi du message dans Firestore
 function sendMessage(e) {
   if (e) e.preventDefault();  // Empêche le rechargement de la page
@@ -153,7 +170,8 @@ function sendMessage(e) {
     pseudo: userName,
     content: processedMessage,
     participants: [userId, userEmail],
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    isAdmin: isAdmin  // Ajouter si l'utilisateur est admin
   });
 
   input.value = ''; // Réinitialise le champ de saisie
@@ -162,7 +180,6 @@ function sendMessage(e) {
 
 // Remplacer le clic sur le bouton d'envoi par un formulaire
 document.getElementById('messageForm').addEventListener('submit', sendMessage);
-
 
 // Fonction pour mettre à jour le statut en ligne de l'utilisateur
 function updateOnlineStatus() {
@@ -269,7 +286,7 @@ function traiterCommandes(message) {
   if (trimmed === "/shrug") return "¯\\_(ツ)_/¯";
   if (trimmed === "/roll") return `🎲 Tu as lancé un dé 6 faces... Résultat : ${Math.floor(Math.random() * 6) + 1}`;
   if (trimmed === "/flip") return `🪙 Tu as lancé une pièce... Résultat : ${Math.random() < 0.5 ? "Pile" : "Face"}`;
-  
+
   if (trimmed.startsWith("/dice ")) {
     const nombreFaces = parseInt(trimmed.split(" ")[1]);
     if (!isNaN(nombreFaces) && nombreFaces > 1) {
@@ -281,13 +298,4 @@ function traiterCommandes(message) {
 
   return message; // Si aucune commande, on renvoie le message d'origine
 }
-// ✅ Bouton de déconnexion
-document.getElementById('logout-button').addEventListener('click', () => {
-  firebase.auth().signOut().then(() => {
-    window.location.href = "index.html"; // Redirection vers la page de connexion
-  }).catch(error => {
-    console.error("Erreur lors de la déconnexion :", error);
-    alert("Erreur lors de la déconnexion.");
-  });
-});
- 
+
