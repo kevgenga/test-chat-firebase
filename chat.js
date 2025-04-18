@@ -14,35 +14,94 @@ const db = firebase.firestore();
 
 let userId = null;
 let userName = 'Utilisateur';
-let isAdmin = false;  // Variable pour vérifier si l'utilisateur est admin
+// Référence à la liste dans le DOM
+const onlineUsersList = document.getElementById("online-users-list");
 
-auth.onAuthStateChanged((user) => {
+function afficherUtilisateursEnLigne() {
+  const db = firebase.firestore();
+
+  db.collection("users")
+    .where("isOnline", "==", true)
+    .onSnapshot((snapshot) => {
+      onlineUsersList.innerHTML = "";
+
+      snapshot.forEach((doc) => {
+        const user = doc.data();
+        const uid = doc.id;
+
+        const li = document.createElement("li");
+        li.classList.add("online");
+
+        // Création de l'élément avatar
+        const avatar = document.createElement("div");
+        avatar.classList.add("message-avatar");
+
+        // Création du lien vers le profil
+        const link = document.createElement("a");
+        link.href = `profil.html?uid=${uid}`;
+        link.classList.add("user-link");
+        link.textContent = user.displayName || "Anonyme";
+
+        // Si admin, on ajoute l’emoji 👑
+        if (user.role === "admin") {
+          const adminIcon = document.createElement("span");
+          adminIcon.textContent = "👑";
+          adminIcon.classList.add("admin-icon");
+          link.appendChild(adminIcon);
+        }
+
+        // Conteneur de l’utilisateur
+        const userContainer = document.createElement("div");
+        userContainer.style.display = "flex";
+        userContainer.style.alignItems = "center";
+        userContainer.style.gap = "8px";
+
+        userContainer.appendChild(avatar);
+        userContainer.appendChild(link);
+
+        li.appendChild(userContainer);
+        onlineUsersList.appendChild(li);
+      });
+    });
+}
+
+
+auth.onAuthStateChanged(async (user) => {
   if (user) {
     userId = user.uid;
     userName = user.displayName || 'Utilisateur';
-    checkIfAdmin(userId);  // Vérifier si l'utilisateur est un admin
+
+    await createUserDocIfNotExists(user);
+
     if (!user.displayName) {
       setUserName();
     } else {
       initializeChat();
-      updateOnlineStatus();  // Mettre à jour le statut de l'utilisateur comme "en ligne"
-      updateOnlineUsersRealtime();  // Met à jour la liste des utilisateurs en ligne
-      displayAdminIcon();  // Afficher l'emoji 👑 si l'utilisateur est admin
+      updateOnlineStatus();
+      updateOnlineUsersRealtime();
     }
   } else {
     window.location.href = "index.html";
   }
 });
 
-function checkIfAdmin(userId) {
-  // Vérifie si l'utilisateur est un administrateur dans Firestore
-  db.collection("users").doc(userId).get().then((doc) => {
-    if (doc.exists && doc.data().isAdmin) {
-      isAdmin = true;
+async function createUserDocIfNotExists(user) {
+  const userDocRef = db.collection("users").doc(user.uid);
+  try {
+    const doc = await userDocRef.get();
+    if (!doc.exists) {
+      await userDocRef.set({
+        email: user.email,
+        pseudo: user.displayName || 'Utilisateur',
+        role: 'user'  // rôle par défaut
+      });
+      console.log("Document utilisateur créé avec succès.");
     } else {
-      isAdmin = false;
+      console.log("Document utilisateur déjà existant.");
     }
-  });
+  } catch (error) {
+    console.error("Erreur lors de la récupération/ajout utilisateur :", error);
+  }
 }
 
 function setUserName() {
@@ -50,13 +109,10 @@ function setUserName() {
   if (newUserName) {
     userName = newUserName;
     const user = auth.currentUser;
-    user.updateProfile({
-      displayName: userName
-    }).then(() => {
+    user.updateProfile({ displayName: userName }).then(() => {
       initializeChat();
       updateOnlineStatus();
       updateOnlineUsersRealtime();
-      displayAdminIcon();  // Afficher l'emoji 👑 si l'utilisateur est admin
     }).catch((error) => {
       console.error("Erreur lors de la mise à jour du pseudo : ", error);
     });
@@ -71,89 +127,65 @@ function initializeChat() {
   messageInput.disabled = false;
   sendButton.disabled = false;
 
-  db.collection("messages")
-    .orderBy("createdAt")
-    .onSnapshot(snapshot => {
-      messagesList.innerHTML = '';
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const li = document.createElement('li');
-        li.classList.add(data.from === userId ? 'sent' : 'received');
+  db.collection("messages").orderBy("createdAt").onSnapshot(snapshot => {
+    messagesList.innerHTML = '';
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const li = document.createElement('li');
+      li.classList.add(data.from === userId ? 'sent' : 'received');
 
-        const container = document.createElement('div');
-        container.className = "message-container";
+      const container = document.createElement('div');
+      container.className = "message-container";
 
-        const avatar = document.createElement('div');
-        avatar.className = "message-avatar";
+      const header = document.createElement('div');
+      header.className = "message-header";
 
-        const header = document.createElement('div');
-        header.className = "message-header";
+      const userNameElement = document.createElement('div');
+      userNameElement.className = "message-user";
 
-        const userNameElement = document.createElement('div');
-        userNameElement.className = "message-user";
+      if (data.from === userId) {
+        userNameElement.innerHTML = `<span class="vous-label">(Vous)</span> ${userName}`;
+      } else {
+        const nameText = data.pseudo || "Utilisateur";
+        userNameElement.innerHTML = `${nameText} <a href="public-profil.html?user=${data.from}" class="user-link">Profil</a>`;
+      }
 
-        const userLink = document.createElement('a');
-        userLink.href = `public-profil.html?user=${data.from}`;
-        userLink.textContent = "Profil";
-        userLink.classList.add("user-link");
+      const messageText = document.createElement('div');
+      messageText.className = "message-text message-content";
+      messageText.innerHTML = linkify(data.content);
 
-        // Ajout de l'emoji 👑 si l'utilisateur est admin
-        if (data.isAdmin) {
-          const userIcon = document.createElement("span");
-          userIcon.textContent = "👑";
-          userIcon.classList.add("admin-icon");
-          userNameElement.appendChild(userIcon);
-        }
+      const timestamp = document.createElement('div');
+      timestamp.className = "message-timestamp";
+      timestamp.textContent = data.createdAt?.seconds
+        ? new Date(data.createdAt.seconds * 1000).toLocaleString()
+        : "Date inconnue";
 
-        if (data.from === userId) {
-          const vousSpan = document.createElement("span");
-          vousSpan.textContent = "(Vous) ";
-          vousSpan.classList.add("vous-label");
-          userNameElement.appendChild(vousSpan);
-          userNameElement.appendChild(document.createTextNode(userName));
-        } else {
-          userNameElement.textContent = (data.pseudo || "Utilisateur") + "";
-          userNameElement.appendChild(userLink);
-        }
+      header.appendChild(userNameElement);
+      container.appendChild(header);
 
-        const messageText = document.createElement('div');
-        messageText.className = "message-text message-content";
-        messageText.innerHTML = linkify(data.content);
-
-        function linkify(text) {
-          const urlPattern = /(\b(https?:\/\/)?[\w.-]+\.[a-z]{2,}(\S*)?)/gi;
-          return text.replace(urlPattern, function (url) {
-            let hyperlink = url;
-            if (!hyperlink.startsWith("http")) {
-              hyperlink = "https://" + hyperlink;
-            }
-            return `<a href="${hyperlink}" target="_blank" rel="noopener noreferrer">${url}</a>`;
-          });
-        }
-
-        const timestamp = document.createElement('div');
-        timestamp.className = "message-timestamp";
-        timestamp.textContent = data.createdAt?.seconds
-          ? new Date(data.createdAt.seconds * 1000).toLocaleString()
-          : "Date inconnue";
-
-        container.appendChild(avatar);
-        header.appendChild(userNameElement);
-        container.appendChild(header);
-
-        li.appendChild(container);
-        li.appendChild(messageText);
-        li.appendChild(timestamp);
-        messagesList.appendChild(li);
-      });
-
-      messagesList.scrollTop = messagesList.scrollHeight;
+      li.appendChild(container);
+      li.appendChild(messageText);
+      li.appendChild(timestamp);
+      messagesList.appendChild(li);
     });
+
+    messagesList.scrollTop = messagesList.scrollHeight;
+  });
 }
 
-// Envoi du message dans Firestore
+function linkify(text) {
+  const urlPattern = /(\b(https?:\/\/)?[\w.-]+\.[a-z]{2,}(\S*)?)/gi;
+  return text.replace(urlPattern, (url) => {
+    let hyperlink = url;
+    if (!hyperlink.startsWith("http")) {
+      hyperlink = "https://" + hyperlink;
+    }
+    return `<a href="${hyperlink}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+  });
+}
+
 function sendMessage(e) {
-  if (e) e.preventDefault();  // Empêche le rechargement de la page
+  if (e) e.preventDefault();
 
   const input = document.getElementById('messageInput');
   const content = input.value.trim();
@@ -170,59 +202,56 @@ function sendMessage(e) {
     pseudo: userName,
     content: processedMessage,
     participants: [userId, userEmail],
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    isAdmin: isAdmin  // Ajouter si l'utilisateur est admin
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
 
-  input.value = ''; // Réinitialise le champ de saisie
-  console.log("Envoi du message par :", userName);
+  input.value = '';
 }
 
-// Remplacer le clic sur le bouton d'envoi par un formulaire
 document.getElementById('messageForm').addEventListener('submit', sendMessage);
 
-// Fonction pour mettre à jour le statut en ligne de l'utilisateur
 function updateOnlineStatus() {
   const user = auth.currentUser;
   if (!user) return;
 
   const onlineRef = db.collection("onlineUsers").doc(user.uid);
-
   onlineRef.set({
     uid: user.uid,
     pseudo: user.displayName || 'Utilisateur',
     lastSeen: firebase.firestore.FieldValue.serverTimestamp()
   });
 
-  // Supprimer l'utilisateur quand il quitte la page
   window.addEventListener('beforeunload', () => {
     onlineRef.delete();
   });
 }
 
-// Fonction pour afficher les utilisateurs en ligne
 function updateOnlineUsersRealtime() {
   const onlineUsersList = document.getElementById('online-users-list');
 
   db.collection("onlineUsers")
-    .orderBy("lastSeen", "desc")  // Trier par dernière activité
+    .orderBy("lastSeen", "desc")
     .onSnapshot(snapshot => {
-      onlineUsersList.innerHTML = '';  // Vider la liste avant de la mettre à jour
+      onlineUsersList.innerHTML = '';
 
       snapshot.forEach(doc => {
         const user = doc.data();
         const li = document.createElement('li');
         li.classList.add('online');
-        li.textContent = user.pseudo || "Utilisateur";  // Afficher le pseudo
-        onlineUsersList.appendChild(li);
+
+        db.collection("users").doc(user.uid).get().then(userDoc => {
+          const userData = userDoc.data();
+          const isAdmin = userData?.role === 'admin';
+          li.textContent = (isAdmin ? '👑 ' : '') + (user.pseudo || "Utilisateur");
+          onlineUsersList.appendChild(li);
+        });
       });
     });
 }
 
-// Nettoyage des utilisateurs inactifs
 function cleanupInactiveUsers() {
   const now = firebase.firestore.Timestamp.now();
-  const maxInactiveDuration = 5 * 60 * 1000;  // 5 minutes
+  const maxInactiveDuration = 5 * 60 * 1000;
 
   db.collection("onlineUsers")
     .get()
@@ -230,18 +259,15 @@ function cleanupInactiveUsers() {
       snapshot.forEach(doc => {
         const user = doc.data();
         const lastSeen = user.lastSeen.toMillis();
-
-        if (now - lastSeen > maxInactiveDuration) {
+        if (now.toMillis() - lastSeen > maxInactiveDuration) {
           db.collection("onlineUsers").doc(user.uid).delete();
         }
       });
     });
 }
 
-// Appel périodique de nettoyage
-setInterval(cleanupInactiveUsers, 60 * 1000);  // Toutes les 60 secondes
+setInterval(cleanupInactiveUsers, 60 * 1000);
 
-// Déconnexion
 document.getElementById('logout-button').addEventListener('click', () => {
   auth.signOut().then(() => {
     window.location.href = "index.html";
@@ -250,28 +276,13 @@ document.getElementById('logout-button').addEventListener('click', () => {
   });
 });
 
-// Mode sombre / clair
+// Thème
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 const savedTheme = localStorage.getItem('theme');
 const bodyClass = document.body.classList;
+bodyClass.add(savedTheme || (prefersDark ? 'dark' : 'light'));
 
-if (savedTheme) {
-  bodyClass.add(savedTheme);
-} else {
-  bodyClass.add(prefersDark ? 'dark' : 'light');
-}
-
-document.getElementById('theme-toggle').addEventListener('click', () => {
-  if (bodyClass.contains('dark')) {
-    bodyClass.replace('dark', 'light');
-    localStorage.setItem('theme', 'light');
-  } else {
-    bodyClass.replace('light', 'dark');
-    localStorage.setItem('theme', 'dark');
-  }
-});
-
-// Envoi avec touche "Entrée"
+// Envoi par Entrée
 document.getElementById('messageInput').addEventListener('keydown', function (event) {
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault();
@@ -279,7 +290,7 @@ document.getElementById('messageInput').addEventListener('keydown', function (ev
   }
 });
 
-// Gestion des commandes
+// Commandes
 function traiterCommandes(message) {
   const trimmed = message.trim().toLowerCase();
 
@@ -296,6 +307,5 @@ function traiterCommandes(message) {
     }
   }
 
-  return message; // Si aucune commande, on renvoie le message d'origine
+  return message;
 }
-
