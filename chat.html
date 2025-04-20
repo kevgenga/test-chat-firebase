@@ -9,17 +9,25 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
+<!-- Script principal -->
+<script src="chat.js" defer></script>
   <!-- Styles -->
   <link rel="stylesheet" href="chat.css" />
 
-  <!-- Script principal -->
-  <script src="chat.js" defer></script>
+  
 </head>
 
 <body class="light">
   
   <div id="user-icon"></div>  <!-- Ici l'emoji sera inséré -->
+  
+  <div id="user-profile">
+    <div id="user-name">Nom de l'utilisateur</div>
+    <div id="bio-container">
+      <textarea id="bio" placeholder="Écrire une bio..."></textarea>
+    </div>
+  </div>
+  
 
 
   <!-- Logo et Titre -->
@@ -53,6 +61,14 @@
     <!-- Conteneur du chat au centre -->
     <div class="chat-container">
       <div class="messages-container" id="messages"></div>
+        <div class="message-container">
+          <div class="message-header">
+            <span class="message-user">
+            </span>
+          </div>
+        </div>
+      
+      
 
       <!-- Formulaire d'envoi de message -->
       <form id="messageForm">
@@ -70,8 +86,17 @@
       <ul id="online-users-list">
 
           <div id="user-list"></div> <!-- C'est ici que la liste des utilisateurs s'affichera -->
+          <ul id="online-users-list">
+            <li class="online">
+              <div class="message-avatar"></div>
+              <a href="#" class="user-link">Nom d'Utilisateur</a>
+              <span class="admin-icon">👑</span> <!-- Icône admin -->
+            </li>
+            <!-- Ajouter d'autres utilisateurs ici -->
+          </ul>
+          
         
-          <script src="script.js"></script> <!-- Fichier JS avec la logique -->
+          
 
         <!-- Utilisateurs en ligne (injectés dynamiquement) -->
       </ul>
@@ -81,7 +106,7 @@
     </div>
 
   </div>
-
+<script src="chat.js"></script> <!-- Fichier JS avec la logique -->
 </body>
 </html>
 
