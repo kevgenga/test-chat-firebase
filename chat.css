@@ -462,5 +462,83 @@ button:hover {
   color: #555;
   display: ;
 }
+/* Admin icon (couronne) */
+.admin-icon {
+  font-size: 1.5em;
+  color: gold;
+  margin-left: 5px; /* Ajoute un peu d'espace entre le nom et la couronne */
+  vertical-align: middle; /* Assure l'alignement vertical avec le texte */
+}
 
+/* Pour les utilisateurs en ligne */
+.online .admin-icon {
+  margin-left: 10px; /* Un peu plus d'espace pour les utilisateurs en ligne */
+  font-size: 1.5em;
+  color: gold;
+}
+
+/* Alignement des utilisateurs en ligne */
+#online-users-list li {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.online {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.online .user-link {
+  color: #333;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.online .user-link:hover {
+  color: #007bff;
+}
+
+/* Nouveau bloc utilisateur */
+#user-profile {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: var(--background);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 250px;
+}
+
+#user-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--text);
+}
+
+#bio-container {
+  margin-top: 10px;
+}
+
+#bio {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background-color: var(--message-bg);
+  color: var(--text);
+  resize: vertical;
+}
+
+#bio:focus {
+  border-color: var(--button-bg);
+  outline: none;
+}
 
