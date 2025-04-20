@@ -348,3 +348,4 @@ displayAdminIcon(userRole);
   // Ajout de la carte utilisateur au conteneur principal
   userListContainer.appendChild(userCard);
 });
+
