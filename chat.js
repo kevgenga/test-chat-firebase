@@ -245,18 +245,6 @@ function displayUserProfile() {
 
       // Afficher la bio si elle existe
       bioElement.value = userData.bio || "";
-
-      // Gérer la mise à jour de la bio
-      bioElement.addEventListener('blur', () => {
-        const newBio = bioElement.value.trim();
-        if (newBio !== userData.bio) { // Si la bio a été modifiée
-          userRef.update({
-            bio: newBio
-          }).then(() => {
-            console.log('Bio mise à jour avec succès.');
-          }).catch(error => {
-            console.error('Erreur lors de la mise à jour de la bio:', error);
-          });
         }
       });
     }
