@@ -9,8 +9,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <link rel="icon" href="path/to/favicon.ico" type="image/x-icon">
-
 
   <!-- Styles -->
   <link rel="stylesheet" href="chat.css" />
@@ -18,7 +16,13 @@
   <!-- Script principal -->
   <script src="chat.js" defer></script>
 </head>
+
 <body class="light">
+  
+  <div id="user-icon"></div>  <!-- Ici l'emoji sera inséré -->
+
+
+  <!-- Logo et Titre -->
   <div class="logo-title">
     <div id="image-logo">
       <a href="edit-profil.html">
@@ -27,7 +31,11 @@
     </div>
     <h1 id="titre-du-chat">CHATBOX ROOM ADMIN</h1>
   </div>
+
+  <!-- Conteneur principal horizontal -->
   <div class="chat-layout">
+    
+    <!-- Boîte de commandes à gauche -->
     <aside class="commandes-container">
       <h3>Commandes</h3>
       <ul>
@@ -42,42 +50,38 @@
       </ul>
     </aside>
 
+    <!-- Conteneur du chat au centre -->
     <div class="chat-container">
       <div class="messages-container" id="messages"></div>
+
+      <!-- Formulaire d'envoi de message -->
       <form id="messageForm">
         <input type="text" id="messageInput" placeholder="Tapez votre message..." autocomplete="off" />
         <button type="submit" id="bouton-envoyer">Envoyer</button>
-        <!-- Exemple d'élément où l'emoji sera ajouté -->
-<div class="user-container">
-  <span class="houlou">Nom de l'utilisateur</span>
-  <span class="admin-icon-container">
-    <span class="admin-icon">👑</span> <!-- L'emoji ici -->
-  </span>
-</div>
-
-        <!-- Exemple dans un message -->
-<li class="sent">
-  <div class="message-container">
-    <div class="message-avatar">👑</div>
-    <div class="message-header">
-      <span class="message-user">User</span>
-      <span class="message-text">Bonjour</span>
-    </div>
-  </div>
-</li>
-
       </form>
+
       <button id="bouton-profil" onclick="window.location.href='edit-profil.html'">Éditer mon profil</button>
     </div>
 
+    <!-- Membres en ligne à droite -->
     <div class="online-users-container" id="online-users-container">
       <h3>Membres en ligne</h3>
-      <ul id="online-users-list"></ul>
+
+      <ul id="online-users-list">
+
+          <div id="user-list"></div> <!-- C'est ici que la liste des utilisateurs s'affichera -->
+        
+          <script src="script.js"></script> <!-- Fichier JS avec la logique -->
+
+        <!-- Utilisateurs en ligne (injectés dynamiquement) -->
+      </ul>
       <div class="input-container">
-        <button id="logout-button">Déconnexion</button>
+        <button id="logout-button">Déconnexion</button> <!-- ✅ Bouton ajouté -->
       </div>
     </div>
+
   </div>
+
 </body>
 </html>
 
