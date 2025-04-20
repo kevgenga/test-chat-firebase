@@ -26,6 +26,7 @@ auth.onAuthStateChanged((user) => {
       if (pseudo) {
         userName = pseudo;
         user.updateProfile({ displayName: pseudo }).then(() => {
+          console.log("Nom d'utilisateur mis à jour.");
           initializeChat();
         });
       }
@@ -38,6 +39,7 @@ auth.onAuthStateChanged((user) => {
 });
 
 function initializeChat() {
+  console.log("Chat initialisé.");
   updateOnlineStatus();
   updateOnlineUsersRealtime();
   listenMessages();
@@ -124,115 +126,9 @@ function linkify(text) {
   });
 }
 
-// Envoi de message
-document.getElementById('messageForm').addEventListener('submit', sendMessage);
-function sendMessage(e) {
-  e.preventDefault();
-  const input = document.getElementById('messageInput');
-  const content = input.value.trim();
-  if (!content) return;
-
-  const processed = traiterCommandes(content);
-  db.collection("messages").add({
-    from: userId,
-    pseudo: userName,
-    content: processed,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
-
-  input.value = '';
-}
-
-// Commandes
-function traiterCommandes(message) {
-  const trimmed = message.trim();
-  const lower = trimmed.toLowerCase();
-
-  if (lower === "/shrug") return "¯\\_(ツ)_/¯";
-  if (lower === "/flip") return `🪙 Résultat : ${Math.random() < 0.5 ? "Pile" : "Face"}`;
-  if (lower === "/roll") return `🎲 Résultat : ${Math.floor(Math.random() * 6) + 1}`;
-  if (lower.startsWith("/dice ")) {
-    const faces = parseInt(lower.split(" ")[1]);
-    if (faces > 1) return `🎲 Résultat : ${Math.floor(Math.random() * faces) + 1}`;
-    return "⚠️ Utilisation : /dice <nombre>";
-  }
-  return message;
-}
-
-// Envoi avec Entrée
-document.getElementById('messageInput').addEventListener('keydown', function (e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage(e);
-  }
-});
-
-// Statut en ligne
-function updateOnlineStatus() {
-  const ref = db.collection("onlineUsers").doc(userId);
-  ref.set({
-    uid: userId,
-    pseudo: userName,
-    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-  });
-
-  window.addEventListener('beforeunload', () => {
-    ref.delete(); // On retire l'utilisateur de la liste en ligne lorsqu'il quitte la page
-  });
-}
-
-// Liste utilisateurs en ligne
-function updateOnlineUsersRealtime() {
-  const list = document.getElementById('online-users-list');
-  db.collection("onlineUsers").orderBy("lastSeen", "desc").onSnapshot(snapshot => {
-    list.innerHTML = '';
-    snapshot.forEach(doc => {
-      const user = doc.data();
-      const li = document.createElement('li');
-      li.className = "online";
-      li.textContent = user.pseudo || "Utilisateur";
-      list.appendChild(li);
-    });
-  });
-}
-
-// Nettoyage des utilisateurs inactifs
-setInterval(() => {
-  const now = Date.now();
-  db.collection("onlineUsers").get().then(snapshot => {
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      if (now - data.lastSeen.toMillis() > 5 * 60 * 1000) { // Si l'utilisateur est inactif depuis plus de 5 minutes
-        db.collection("onlineUsers").doc(data.uid).delete(); // On le retire de la liste des utilisateurs en ligne
-      }
-    });
-  });
-}, 60 * 1000);
-
-// Thème clair/sombre
-function setTheme() {
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const saved = localStorage.getItem('theme');
-  const body = document.body.classList;
-  if (saved) {
-    body.add(saved);
-  } else {
-    body.add(prefersDark ? 'dark' : 'light');
-  }
-
-  document.getElementById('theme-toggle').addEventListener('click', () => {
-    if (body.contains('dark')) {
-      body.replace('dark', 'light');
-      localStorage.setItem('theme', 'light');
-    } else {
-      body.replace('light', 'dark');
-      localStorage.setItem('theme', 'dark');
-    }
-  });
-}
-
 // Affichage et mise à jour du profil utilisateur
 function displayUserProfile() {
+  console.log("Affichage du profil...");
   const userRef = db.collection('users').doc(userId); // Utiliser l'ID utilisateur pour récupérer ses données
   userRef.get().then(doc => {
     if (doc.exists) {
@@ -250,6 +146,7 @@ function displayUserProfile() {
       bioElement.addEventListener('blur', () => {
         const newBio = bioElement.value.trim();
         if (newBio !== userData.bio) { // Si la bio a été modifiée
+          console.log("Bio modifiée, mise à jour dans Firestore...");
           userRef.update({
             bio: newBio
           }).then(() => {
@@ -259,7 +156,11 @@ function displayUserProfile() {
           });
         }
       });
+    } else {
+      console.log("Aucun profil trouvé pour cet utilisateur.");
     }
+  }).catch((error) => {
+    console.error("Erreur lors de la récupération du profil : ", error);
   });
 }
 
