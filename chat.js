@@ -42,6 +42,7 @@ function initializeChat() {
   updateOnlineUsersRealtime();
   listenMessages();
   setTheme();
+  displayUserProfile(); // Appeler la fonction pour afficher le profil
 }
 
 // Affichage des messages
@@ -226,6 +227,38 @@ function setTheme() {
     } else {
       body.replace('light', 'dark');
       localStorage.setItem('theme', 'dark');
+    }
+  });
+}
+
+// Affichage et mise à jour du profil utilisateur
+function displayUserProfile() {
+  const userRef = db.collection('users').doc(userId); // Utiliser l'ID utilisateur pour récupérer ses données
+  userRef.get().then(doc => {
+    if (doc.exists) {
+      const userData = doc.data();
+      const userNameElement = document.getElementById('user-name');
+      const bioElement = document.getElementById('bio');
+
+      // Afficher le nom de l'utilisateur
+      userNameElement.textContent = userData.pseudo || "Utilisateur";
+
+      // Afficher la bio si elle existe
+      bioElement.value = userData.bio || "";
+
+      // Gérer la mise à jour de la bio
+      bioElement.addEventListener('blur', () => {
+        const newBio = bioElement.value.trim();
+        if (newBio !== userData.bio) { // Si la bio a été modifiée
+          userRef.update({
+            bio: newBio
+          }).then(() => {
+            console.log('Bio mise à jour avec succès.');
+          }).catch(error => {
+            console.error('Erreur lors de la mise à jour de la bio:', error);
+          });
+        }
+      });
     }
   });
 }
