@@ -2,14 +2,6 @@
   color-scheme: light dark;
   --background: #f0f2f5;
   --text: #333;
-  --message-bg: #fff;
-  --sent-bg: #dcf8c6;
-  --received-bg: #f1f0f0;
-  --border: #ddd;
-  --avatar-bg: #bbb;
-  --input-border: #ccc;
-  --button-bg: #4caf50;
-  --button-hover: #45a049;
 }
 
 body {
@@ -19,9 +11,22 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: var(--background);
-  color: var(--text);
+  background-color: var(--background, #fff);
+  color: var(--text, #000);
   transition: background-color 0.3s, color 0.3s;
+}
+
+body.light {
+  --background: #f0f2f5;
+  --text: #333;
+  --message-bg: #fff;
+  --sent-bg: #dcf8c6;
+  --received-bg: #f1f0f0;
+  --border: #ddd;
+  --avatar-bg: #bbb;
+  --input-border: #ccc;
+  --button-bg: #4caf50;
+  --button-hover: #45a049;
 }
 
 body.dark {
@@ -41,104 +46,25 @@ h1 {
   font-size: 24px;
   text-transform: uppercase;
   margin-bottom: 20px;
-  text-align: center;
-}
-
-.logo-title {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 15px;
-}
-
-#image-logo img {
-  width: 50px;
-  height: auto;
-}
-
-#titre-du-chat {
-  margin: 0 auto;
-  padding: 0 20px;
-  max-width: 90vw;
-}
-
-.chat-layout {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 30px;
-  padding: 20px;
-}
-
-.commandes-container,
-.online-users-container {
-  width: 250px;
-  background-color: var(--message-bg);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 16px;
-}
-
-.commandes-container h3,
-.online-users-container h3 {
-  font-size: 1.2em;
-  margin-bottom: 12px;
-  color: var(--text);
-}
-
-.commandes-container ul,
-.online-users-container ul {
-  list-style: none;
-  padding: 0;
-}
-
-.commandes-container li,
-.online-users-container li {
-  margin: 8px 0;
-  font-size: 0.9em;
-}
-
-.commandes-container li strong,
-.online-users-container li strong {
-  font-weight: bold;
-  color: #007bff;
-}
-
-#online-users-list li.online {
-  color: green;
-}
-
-#online-users-list li.offline {
-  color: red;
-}
-
-.chat-container {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 600px;
-}
-
-.messages-container {
-  background-color: var(--message-bg);
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  padding: 10px;
-  max-height: 400px;
-  overflow-y: auto;
 }
 
 #messages {
+  max-width: 600px;
+  width: 100%;
+  height: 400px;
+  overflow-y: auto;
+  background-color: var(--message-bg);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+  padding: 10px;
   list-style: none;
-  margin: 0;
-  padding: 0;
 }
 
 #messages li {
   display: flex;
   flex-direction: column;
-  margin: 10px 0;
+  margin: 10px 10px 10px 0;
   padding: 10px;
   border-radius: 10px;
   max-width: 80%;
@@ -146,14 +72,29 @@ h1 {
 }
 
 .sent {
-  margin-left: auto;
+  margin-left: 50px;
   background-color: var(--sent-bg);
+  align-self: flex-end;
   text-align: right;
 }
 
+.sent .message-container {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.sent .message-avatar {
+  margin-left: 10px;
+  margin-right: 0;
+}
+
+.sent .message-header {
+  align-items: flex-end;
+}
+
 .received {
-  margin-right: auto;
   background-color: var(--received-bg);
+  align-self: flex-start;
   text-align: left;
 }
 
@@ -169,6 +110,7 @@ h1 {
   background-color: var(--avatar-bg);
   border-radius: 50%;
   margin-right: 10px;
+  flex-shrink: 0;
 }
 
 .message-header {
@@ -179,35 +121,89 @@ h1 {
 
 .message-user {
   font-weight: bold;
-  color: var(--text);
+  color: rgb(71, 71, 71);
   font-size: 16px;
+}
+
+body.dark .message-user {
+  color: rgb(255, 255, 255);
+}
+
+.vous-label {
+  font-size: 12px;
+  color: #888;
+}
+
+body.dark .vous-label {
+  color: #e0e0e0;
+}
+
+.user-link {
+  display: flex;
+  margin: 2px;
+  padding: 1px;
+  color: #0077ff;
+  font-size: 12px;
+  text-decoration: underline;
+}
+
+body.dark .user-link {
+  color: #66b3ff;
 }
 
 .message-email {
   font-size: 12px;
-  color: var(--text);
+  color: rgb(0, 0, 0);
+}
+
+body.dark .message-email {
+  color: rgb(255, 255, 255);
 }
 
 .message-text {
-  background-color: transparent;
-  color: var(--text);
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
+  text-align: left;
+  position: relative;
+  margin: 5px 0;
+  padding: 11px;
+  color: #000;
   font-size: 15px;
   word-wrap: break-word;
+  border-radius: 10px;
   max-width: 100%;
+  border: 1px solid var(--border);
+  z-index: 0;
+  overflow: hidden;
+}
+
+.message-text::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--message-bg);
+  opacity: 0.7;
+  border-radius: 10px;
+  z-index: -1;
+}
+
+body.dark .message-text {
+  color: rgb(255, 255, 255);
 }
 
 .message-timestamp {
   margin-top: 5px;
   font-size: 11px;
-  color: #777;
+  color: rgb(75, 75, 75);
+}
+
+body.dark .message-timestamp {
+  color: rgb(248, 248, 248);
+  font-style: bold;
 }
 
 input[type="text"] {
-  width: 100%;
+  width: 300px;
   padding: 12px;
+  margin: 10px;
   font-size: 16px;
   border-radius: 5px;
   border: 1px solid var(--input-border);
@@ -222,44 +218,17 @@ input[type="text"]:focus {
 
 button {
   padding: 10px 20px;
-  background-color: var(--button-bg);
-  color: white;
+  margin-top: 10px;
   border: none;
   border-radius: 5px;
+  background-color: var(--button-bg);
+  color: white;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
 button:hover {
   background-color: var(--button-hover);
-}
-
-#messageForm {
-  display: flex;
-  gap: 10px;
-}
-
-#bouton-envoyer,
-#bouton-profil,
-#logout-button {
-  width: 100%;
-}
-
-#logout-button {
-  background-color: #f44336;
-}
-
-#logout-button:hover {
-  background-color: #d32f2f;
-}
-
-.admin-icon {
-  color: gold;
-  margin-left: 50px;
-  font-size: 20px; /* Augmente la taille de l'emoji si nécessaire */
-    visibility: visible; /* Assurez-vous qu'il est visible */
-  display: inline-block; /* Ou 'inline' si nécessaire */
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji";
 }
 
 @keyframes fadeIn {
@@ -272,25 +241,225 @@ button:hover {
     transform: translateY(0);
   }
 }
-.user-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16px;
+
+#theme-toggle {
+  position: fixed;
+  top: -10px;
+  right: 0px;
 }
 
-.admin-icon-container {
+#bouton-envoyer,
+#bouton-profil {
+  width: 100%;
   display: flex;
-  align-items: center;
   justify-content: center;
-  background-color: #f0f0f0; /* Couleur de fond du container de l'icône */
-  border-radius: 50%;
-  padding: 4px;
-  width: 30px; /* Largeur du container */
-  height: 30px; /* Hauteur du container */
+  align-items: center;
+  padding: 10px 20px;
+  background-color: var(--button-bg);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
+#bouton-envoyer:hover,
+#bouton-profil:hover {
+  background-color: var(--button-hover);
+}
+
+#titre-du-chat {
+  position: relative;
+  top: 10px;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
+  text-align: center;
+  margin: 20px auto;
+  padding: 0 20px;
+  max-width: 120vw;
+  box-sizing: border-box;
+}
+
+#logout-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#logout-button:hover {
+  background-color: #d32f2f;
+}
+
+#logout-button:focus {
+  outline: none;
+}
+
+.logo-title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+#image-logo img {
+  width: 50px;
+  height: auto;
+}
+
+/* Styles pour les boîtes des commandes et des membres en ligne */
+.commandes-container,
+.online-users-container {
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin: 10px 0;
+}
+
+.commandes-container h3,
+.online-users-container h3 {
+  font-size: 1.2em;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.commandes-container ul,
+.online-users-container ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.commandes-container li,
+.online-users-container li {
+  margin: 8px 0;
+  font-size: 0.9em;
+}
+
+.commandes-container li strong,
+.online-users-container li strong {
+  font-weight: bold;
+  color: #007bff;
+}
+
+.online-users-container {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+#online-users-list li {
+  padding: 4px 0;
+  color: #333;
+}
+
+#online-users-list li.online {
+  color: green;
+}
+
+#online-users-list li.offline {
+  color: red;
+}
+/* Conteneur principal qui va contenir le chat et la boîte des commandes */
+.chat-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+/* Boîte de messages */
+.messages-container {
+  flex-grow: 1; /* Permet au chat de prendre le reste de l'espace */
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* Liste des commandes */
+.commandes-container h3,
+.messages-container h3 {
+  font-size: 1.2em;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.commandes-container ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.commandes-container li {
+  margin: 8px 0;
+  font-size: 0.9em;
+}
+
+.commandes-container li strong {
+  font-weight: bold;
+  color: #007bff;
+}
+/* 📦 Commandes à gauche */
+.commandes-container {
+  width: 250px;
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+  height: fit-content;
+}
+
+/* 💡 Conteneur principal horizontal */
+.chat-layout {
+  display: flex;
+  justify-content: center; /* Centrer le contenu horizontalement */
+  align-items: flex-start;
+  gap: 30px;
+  padding: 20px;
+}
+.chat-container {
+  flex-grow: 0;
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+/* Conteneur principal */
+#user-list {
+  margin-top: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Chaque utilisateur aura une "carte" */
+.user-card {
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+/* Rendre le nom d'utilisateur en gras */
+.username {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* Icône dorée pour les admins */
 .admin-icon {
   color: gold;
-  font-size: 18px; /* Taille de l'emoji */
+  margin-left: 8px;
 }
+
+/* Style du texte sous le nom de l'utilisateur */
+.user-email {
+  color: #555;
+  display: ;
+}
+
