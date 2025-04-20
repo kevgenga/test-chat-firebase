@@ -526,17 +526,6 @@ button:hover {
   margin-top: 10px;
 }
 
-#bio {
-  width: 100%;
-  padding: 10px;
-  font-size: 14px;
-  border-radius: 5px;
-  border: 1px solid var(--border);
-  background-color: var(--message-bg);
-  color: var(--text);
-  resize: vertical;
-}
-
 #bio:focus {
   border-color: var(--button-bg);
   outline: none;
